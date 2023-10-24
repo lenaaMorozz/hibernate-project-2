@@ -1,15 +1,16 @@
-package com.mer.model.film;
+package com.mer.model.entity.film;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Entity
@@ -21,19 +22,20 @@ import java.util.Set;
 public class Film {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "film_id")
-    private Short id;
+    @Column(name = "film_id", columnDefinition = "smallint")
+    private Integer id;
 
     @Column(name = "title", nullable = false, length = 128)
     private String title;
 
     @Column(name = "description", nullable = false, columnDefinition = "text")
+    @Type(type = "text")
     private String description;
 
     @Column(name = "release_year", nullable = false, columnDefinition = "YEAR")
     private int releaseYear;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "language_id", nullable = false)
     private Language language;
 
@@ -53,26 +55,51 @@ public class Film {
     @Column(name = "replacement_cost", nullable = false, precision = 5, scale = 2, columnDefinition = "DEFAULT 19.99")
     private BigDecimal replacementCost = new BigDecimal("19.99");
 
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     @Column(name = "rating", columnDefinition = "enum('G','PG','PG-13','R','NC-17')")
     private String rating = "R";
 
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     @Column(name = "special_features", columnDefinition = "set('Trailers','Commentaries','Deleted Scenes','Behind the Scenes')")
     private String specialFeatures;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "film_category",
             joinColumns = @JoinColumn(name = "film_id", referencedColumnName = "film_id"),
-            inverseJoinColumns =@JoinColumn(name = "category_id", referencedColumnName = "category_id"))
-    private Set<Category> categorySet;
+            inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "category_id"))
+    private List<Category> categorySet;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "film_actor",
             joinColumns = @JoinColumn(name = "film_id", referencedColumnName = "film_id"),
-            inverseJoinColumns =@JoinColumn(name = "actor_id", referencedColumnName = "actor_id"))
-    private Set<Actor> actorSet;
+            inverseJoinColumns = @JoinColumn(name = "actor_id", referencedColumnName = "actor_id"))
+    private List<Actor> actorSet;
 
     @Column(name = "last_update")
     @UpdateTimestamp
     private LocalDateTime lastUpdate;
 
+    public Set<SpecialFeatures> getSpecialFeatures() {
+        String[] split = this.specialFeatures.split(",");
+        return Arrays.stream(split)
+                .map(SpecialFeatures::getFeaturesEnum)
+                .collect(Collectors.toSet());
+    }
+
+    public void setSpecialFeatures(Set<SpecialFeatures> specialFeaturesSet) {
+        this.specialFeatures = specialFeaturesSet.stream()
+                .map(SpecialFeatures::getFeaturesString)
+                .reduce((s, s2) -> s + "," + s2)
+                .orElse(null);
+    }
+
+    public void setRating(Rating rating) {
+        this.rating = rating.getRating();
+    }
+
+    public Rating getRating() {
+        return Rating.getRatingEnum(this.rating);
+    }
 }

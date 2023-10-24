@@ -1,4 +1,4 @@
-package com.mer.model.movieRental;
+package com.mer.model.entity.movieRental;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 public class Address {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "address_id")
-        private Short id;
+        @Column(name = "address_id", columnDefinition = "smallint")
+        private Integer id;
 
         @Column(name = "address", length = 50, nullable = false)
         private String address;
@@ -35,7 +35,7 @@ public class Address {
         @JoinColumn(name = "city_id")
         private City city;
 
-        @Column(name = "postal_code", length = 10, nullable = false)
+        @Column(name = "postal_code", length = 10)
         private String postalCode;
 
         @Column(name = "phone", length = 20, nullable = false)

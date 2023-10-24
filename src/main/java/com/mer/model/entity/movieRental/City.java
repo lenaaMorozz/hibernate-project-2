@@ -1,4 +1,4 @@
-package com.mer.model.movieRental;
+package com.mer.model.entity.movieRental;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,19 +10,24 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "country")
+@Table(name = "city")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Country {
+public class City {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "country_id")
-    private Short id;
+    @Column(name = "city_id", columnDefinition = "smallint")
+    private Integer id;
 
-    @Column(name = "country", length = 50, nullable = false)
-    private String country;
+    @Column(name = "city", length = 50, nullable = false)
+    private String city;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "country_id")
+    private Country country;
 
     @Column(name = "last_update")
     @UpdateTimestamp

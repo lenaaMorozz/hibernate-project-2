@@ -1,4 +1,4 @@
-package com.mer.model.movieRental;
+package com.mer.model.entity.movieRental;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id")
-    private Short id;
+    @Column(name = "payment_id", columnDefinition = "smallint")
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

@@ -1,4 +1,4 @@
-package com.mer.model.movieRental;
+package com.mer.model.entity.movieRental;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,7 +18,7 @@ public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id", columnDefinition = "tinyint")
-    private Short id;
+    private Integer id;
 
     @OneToOne
     @ToString.Exclude

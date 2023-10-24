@@ -1,4 +1,4 @@
-package com.mer.model.movieRental;
+package com.mer.model.entity.movieRental;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

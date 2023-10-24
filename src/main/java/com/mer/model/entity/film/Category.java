@@ -1,4 +1,4 @@
-package com.mer.model.film;
+package com.mer.model.entity.film;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id", columnDefinition = "tinyint")
-    private Short id;
+    private Integer id;
 
     @Column(name = "name", length = 25, nullable = false)
     private String name;

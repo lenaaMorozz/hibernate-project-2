@@ -1,35 +1,32 @@
-package com.mer.model.movieRental;
+package com.mer.model.entity.film;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "city")
+@Table(name = "language")
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class City {
-
+@NoArgsConstructor
+@Builder
+public class Language {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "city_id")
-    private Short id;
+    @Column(name = "language_id", columnDefinition = "tinyint")
+    private Integer id;
 
-    @Column(name = "city", length = 50, nullable = false)
-    private String city;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "country_id")
-    private Country country;
+    @Column(name = "name", nullable = false, length = 20, columnDefinition = "char")
+    private String name;
 
     @Column(name = "last_update")
     @UpdateTimestamp
     private LocalDateTime lastUpdate;
+
 }

@@ -1,6 +1,5 @@
-package com.mer.model.movieRental;
+package com.mer.model.entity.film;
 
-import com.mer.model.film.Film;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,24 +10,22 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "inventory")
+@Table(name = "actor")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Inventory {
+public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inventory_id")
+    @Column(name = "actor_id", columnDefinition = "smallint")
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "film_id")
-    private Film film;
+    @Column(name = "first_name", nullable = false, length = 45)
+    private String firstName;
 
-    @ManyToOne
-    @JoinColumn(name = "store_id")
-    private Store store;
+    @Column(name = "last_name", nullable = false, length = 45)
+    private String lastName;
 
     @Column(name = "last_update")
     @UpdateTimestamp
