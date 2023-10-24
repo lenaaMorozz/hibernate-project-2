@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 
 @Entity
 @Table(name = "film")
@@ -82,6 +84,9 @@ public class Film {
     private LocalDateTime lastUpdate;
 
     public Set<SpecialFeatures> getSpecialFeatures() {
+        if (isNull(specialFeatures) || specialFeatures.isEmpty()) {
+            return null;
+        }
         String[] split = this.specialFeatures.split(",");
         return Arrays.stream(split)
                 .map(SpecialFeatures::getFeaturesEnum)
@@ -100,6 +105,7 @@ public class Film {
     }
 
     public Rating getRating() {
+        if(isNull(rating)) return null;
         return Rating.getRatingEnum(this.rating);
     }
 }

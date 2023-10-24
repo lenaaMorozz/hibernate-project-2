@@ -18,7 +18,6 @@ public class FilmText {
     @Column(name = "film_id", columnDefinition = "smallint")
     private Integer id;
 
-    //TODO: @Id
     @OneToOne
     @JoinColumn(name = "film_id")
     private Film film;
