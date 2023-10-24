@@ -72,7 +72,8 @@ public class Main {
         Main main = new Main();
 //        Customer customer = main.createCustomer();
 //        main.returnRental(13351);
-        main.addNewFilmForRental();
+//        main.addNewFilmForRental();
+        main.rentalFilm();
     }
 
     private Customer createCustomer() {
@@ -117,43 +118,70 @@ public class Main {
     }
 
     private void addNewFilmForRental() {
-        Transaction transaction = sessionFactory.getCurrentSession().beginTransaction();
-        Film film = Film.builder()
-                .title("New film")
-                .description("new description")
-                .releaseYear(2023)
-                .language(languageDAO.getById(1))
-                .rentalDuration((byte) 6)
-                .rentalRate(new BigDecimal("0.99"))
-                .length((short) 100)
-                .replacementCost(new BigDecimal("20.98"))
-                .rating(Rating.G.getRating())
-                .categorySet(categoryDAO.getItems(0, 3))
-                .actorSet(actorDAO.getItems(5, 5))
-                .build();
+        try (Session session = sessionFactory.getCurrentSession()) {
+            Transaction transaction = session.beginTransaction();
+            Film film = Film.builder()
+                    .title("New film")
+                    .description("new description")
+                    .releaseYear(2023)
+                    .language(languageDAO.getById(1))
+                    .rentalDuration((byte) 6)
+                    .rentalRate(new BigDecimal("0.99"))
+                    .length((short) 100)
+                    .replacementCost(new BigDecimal("20.98"))
+                    .rating(Rating.G.getRating())
+                    .categorySet(categoryDAO.getItems(0, 3))
+                    .actorSet(actorDAO.getItems(5, 5))
+                    .build();
 
-        Set<SpecialFeatures> specialFeatures = Set.of(SpecialFeatures.Commentaries, SpecialFeatures.Trailers);
-        film.setSpecialFeatures(specialFeatures);
+            Set<SpecialFeatures> specialFeatures = Set.of(SpecialFeatures.Commentaries, SpecialFeatures.Trailers);
+            film.setSpecialFeatures(specialFeatures);
 
-        sessionFactory.getCurrentSession().save(film);
+            filmDAO.save(film);
 
-        FilmText filmText = FilmText.builder()
-                .id(film.getId())
-                .title(film.getTitle())
-                .description(film.getDescription())
-                .build();
+            FilmText filmText = FilmText.builder()
+                    .id(film.getId())
+                    .title(film.getTitle())
+                    .description(film.getDescription())
+                    .build();
 
-        sessionFactory.getCurrentSession().save(filmText);
+            filmTextDAO.save(filmText);
 
-        Store store = storeDAO.getById(1);
+            Store store = storeDAO.getById(1);
 
-        Inventory inventory = Inventory.builder()
-                .film(film)
-                .store(store)
-                .build();
+            Inventory inventory = Inventory.builder()
+                    .film(film)
+                    .store(store)
+                    .build();
 
-        sessionFactory.getCurrentSession().save(inventory);
-        transaction.commit();
+            inventoryDAO.save(inventory);
+            transaction.commit();
+        }
     }
 
+    private void rentalFilm() {
+        try (Session session = sessionFactory.getCurrentSession()) {
+            Transaction transaction = session.beginTransaction();
+            Rental rental = Rental.builder()
+                    .rental_date(LocalDateTime.now())
+                    .inventory(inventoryDAO.getById(1))
+                    .customer(customerDAO.getById(3))
+                    .staff(staffDAO.getById(2))
+                    .build();
+            rentalDAO.save(rental);
+
+            Film film = inventoryDAO.getById(1).getFilm();
+
+            Payment payment = Payment.builder()
+                    .customer(rental.getCustomer())
+                    .staff(rental.getStaff())
+                    .rental(rental)
+                    .amount(film.getRentalRate())
+                    .paymentDate(LocalDateTime.now())
+                    .build();
+            paymentDAO.save(payment);
+
+            transaction.commit();
+        }
+    }
 }
